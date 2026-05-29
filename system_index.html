@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grade Portal</title>
+
+<style>
+body{font-family:Arial;background:#667eea;display:flex;justify-content:center;align-items:center;height:100vh;}
+.container{background:white;padding:20px;border-radius:10px;width:90%;max-width:400px;}
+button,input{width:100%;padding:10px;margin-top:10px;}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Grade Portal</h2>
+
+<input type="file" id="fileInput">
+<button onclick="uploadFile()">Upload Excel</button>
+<button onclick="downloadSample()">Download Sample</button>
+
+<input id="lrn" placeholder="Enter LRN">
+<button onclick="checkGrade()">Check Grade</button>
+
+<div id="result"></div>
+
+</div>
+
+<script>
+
+function downloadSample(){
+window.open("/download_sample");
+}
+
+async function uploadFile(){
+let file = document.getElementById("fileInput").files[0];
+let formData = new FormData();
+formData.append("file", file);
+
+let res = await fetch("/upload_excel",{method:"POST",body:formData});
+let data = await res.json();
+
+alert(data.error ? data.error : "Uploaded!");
+}
+
+async function checkGrade(){
+let lrn = document.getElementById("lrn").value;
+
+let res = await fetch("/check_grade",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({lrn})
+});
+
+let data = await res.json();
+
+document.getElementById("result").innerHTML =
+data.error ? data.error : JSON.stringify(data);
+}
+
+</script>
+
+</body>
+</html>
